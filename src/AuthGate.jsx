@@ -3,28 +3,25 @@ import { supabase } from "./supabase";
 
 export default function AuthGate({ sendSession, children }) {
   const [session, setSession] = useState();
-  // сразу при запуске сайта
+
+  // Получение текущей сессии + подписка на изменения
   useEffect(() => {
-    async function getSession() {
+    let unsub = () => {};
+    (async () => {
       const { data } = await supabase.auth.getSession();
-      setSession(data.session); // session - или null или объект
-    }
+      setSession(data.session);
 
-    getSession();
+      const { data: sub } = await supabase.auth.onAuthStateChange(
+        (_event, newSession) => setSession(newSession)
+      );
+      unsub = () => sub.subscription.unsubscribe();
+    })();
 
-    //подписка на вход.выход.обн токена
-    const { data: sub } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
-        setSession(newSession);
-      }
-    );
+    return () => unsub();
   }, []);
 
-  //авто отправка в приложение инфы о сессии
-  //сессию отправляем только когда она изменилась
-
+  // Создание/обновление профиля по факту наличия пользователя + проброс сессии вверх
   useEffect(() => {
-    //при изм сессии создается или обновляется запись в талице profiles
     async function createProfileNote() {
       const { error } = await supabase.from("profiles").upsert([
         {
@@ -33,29 +30,14 @@ export default function AuthGate({ sendSession, children }) {
           updated_at: new Date().toISOString(),
         },
       ]);
-
-      if (error) {
-        console.error(error);
-      }
-    }
-    if (session?.user) {
-      createProfileNote();
+      if (error) console.error(error);
     }
 
-    sendSession(session);
-  }, [session]);
+    if (session?.user) createProfileNote();
 
-  return <div>{children}</div>;
+    // если нет сессии — отправляем null, чтобы App мог показать /login
+    sendSession(session ?? null);
+  }, [session, sendSession]);
+
+  return <>{children}</>;
 }
-
-//  async function subSession() {
-//       const { data: sub } = await supabase.auth.onAuthStateChange(
-//         (_event, newSession) => {
-//           setSession(newSession);
-//         }
-//       );
-//       let unsub = () => {};
-//       // сохраняет в п-ю unsub ф-ю, кот. при вызове отпишет нас от событий onAuthStateChange
-//       unsub = () => sub.subscription.unsubscribe();
-//       return () => unsub();
-//     }

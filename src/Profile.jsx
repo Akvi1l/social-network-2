@@ -1,4 +1,4 @@
-// Profile.jsx
+// Полноценная страница профиля без Header внутри
 import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import "./Profile.css";
@@ -22,17 +22,13 @@ export default function Profile({ session }) {
   const userEmail = session.user.email;
 
   // ==== helpers ====
-  // из полного public URL вытащим относительный путь в бакете, если получится
   function extractPathFromPublicUrl(val) {
-    // формат public URL:
-    // https://<PROJECT>.supabase.co/storage/v1/object/public/avatars/<path>
     const marker = "/storage/v1/object/public/avatars/";
     const idx = val.indexOf(marker);
     if (idx === -1) return null;
     return val.slice(idx + marker.length);
   }
 
-  // добавим параметр, чтобы перебить кеш (некоторые CDN агрессивно кешируют)
   function withBust(url) {
     return `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
   }
@@ -70,7 +66,7 @@ export default function Profile({ session }) {
         return;
       }
 
-      // 1) Сформировать кандидат #1: public URL (если val — уже полный URL) или получить его из пути
+      // 1) кандидат: public URL
       let publicUrl = "";
       if (/^https?:\/\//i.test(val)) {
         publicUrl = val;
@@ -85,7 +81,6 @@ export default function Profile({ session }) {
         }
       }
 
-      // 2) Если есть publicUrl — проверим доступность. Если OK — используем его.
       if (publicUrl) {
         const testUrl = withBust(publicUrl);
         try {
@@ -94,18 +89,16 @@ export default function Profile({ session }) {
             if (!cancelled) setAvatarSrc(testUrl);
             return;
           }
-          // упал — попробуем signed
           console.warn("[avatar public fetch] not OK:", res.status, testUrl);
         } catch (err) {
           console.warn("[avatar public fetch] error:", err);
         }
       }
 
-      // 3) Фолбэк: получаем signed URL (даже если бакет public — это надёжно)
-      // Для signed нужен ПУТЬ. Если в БД лежал полный URL — попробуем извлечь путь:
+      // 2) фолбэк: signed URL
       let path = "";
       if (/^https?:\/\//i.test(val)) {
-        path = extractPathFromPublicUrl(val) || ""; // может быть null, если URL не в формате Supabase
+        path = extractPathFromPublicUrl(val) || "";
       } else {
         path = val;
       }
@@ -121,12 +114,10 @@ export default function Profile({ session }) {
 
       const { data: signed, error: signedErr } = await supabase.storage
         .from("avatars")
-        .createSignedUrl(path, 60 * 60); // 1 час
+        .createSignedUrl(path, 60 * 60);
 
       if (signedErr) {
         console.error("[createSignedUrl] error:", signedErr);
-
-        // Диагностика: покажем что реально лежит в папке пользователя
         const { data: list, error: listErr } = await supabase.storage
           .from("avatars")
           .list(userId, {
@@ -135,7 +126,6 @@ export default function Profile({ session }) {
           });
         if (listErr) console.error("[storage.list] error:", listErr);
         else console.log("[storage.list]", list);
-
         if (!cancelled) setAvatarSrc("");
         return;
       }
@@ -150,7 +140,7 @@ export default function Profile({ session }) {
     };
   }, [form.avatar_url, userId]);
 
-  // ===== Выход =====
+  // ===== Выход (здесь продублирован не нужен, есть в Header) =====
   async function handleClick() {
     const { error } = await supabase.auth.signOut();
     if (error) console.error(error);
@@ -171,7 +161,7 @@ export default function Profile({ session }) {
       username: form.username || null,
       full_name: form.full_name || null,
       bio: form.bio || null,
-      avatar_url: form.avatar_url || null, // может быть URL или путь
+      avatar_url: form.avatar_url || null,
       updated_at: new Date().toISOString(),
     };
 
@@ -214,11 +204,9 @@ export default function Profile({ session }) {
       return;
     }
 
-    // Для public бакета — получаем public URL
     const { data: pub, error: pubErr } = await supabase.storage
       .from("avatars")
       .getPublicUrl(path);
-
     if (pubErr) {
       console.error("[getPublicUrl] error:", pubErr);
       alert("Ошибка получения ссылки: " + (pubErr.message || "см. консоль"));
@@ -227,10 +215,9 @@ export default function Profile({ session }) {
 
     const imageLink = pub.publicUrl;
 
-    // Локально сразу показываем (сохраняем именно public URL — но фолбэк на signed у нас есть)
+    // Локально сразу показываем (в БД храним public URL — но фолбэк на signed у нас есть)
     setForm((prev) => ({ ...prev, avatar_url: imageLink }));
 
-    // И сразу запишем в БД
     const { error: upsertError } = await supabase.from("profiles").upsert([
       {
         id: userId,
@@ -238,7 +225,7 @@ export default function Profile({ session }) {
         username: form.username || null,
         full_name: form.full_name || null,
         bio: form.bio || null,
-        avatar_url: imageLink, // сохраняем public URL
+        avatar_url: imageLink,
         updated_at: new Date().toISOString(),
       },
     ]);
@@ -285,18 +272,13 @@ export default function Profile({ session }) {
               onChange={(e) => inputCollector("bio", e.target.value)}
               placeholder="Статус"
             />
-
             <input type="file" accept="image/*" onChange={handleChange} />
 
             <div className="actions">
               <button type="button" onClick={() => setIsEditing(false)}>
                 Отмена
               </button>
-              <button
-                onClick={() => console.log("нажата кнопка изменить")}
-                type="submit"
-                className="btn-primary"
-              >
+              <button type="submit" className="btn-primary">
                 Изменить
               </button>
             </div>
@@ -308,8 +290,8 @@ export default function Profile({ session }) {
                 src={avatarSrc || "https://placehold.co/160x160?text=No+avatar"}
                 alt="avatar"
                 style={{
-                  width: 160,
-                  height: 160,
+                  width: 100,
+                  height: 100,
                   objectFit: "cover",
                   borderRadius: 16,
                 }}
@@ -327,7 +309,6 @@ export default function Profile({ session }) {
               <div className="username">
                 {form.username ? `@${form.username}` : "—"}
               </div>
-
               {form.bio && <p className="bio">{form.bio}</p>}
 
               <div className="ids">
