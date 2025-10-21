@@ -200,10 +200,11 @@
   align-items: center;
   gap: 16px;
   padding: 16px;
-  border: 1px solid #eee;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 /* аватар */
@@ -213,7 +214,7 @@
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-  border: 2px solid #f2f2f2;
+  border: 2px solid rgba(255, 255, 255, 0.12);
 }
 
 /* текстовая часть */
@@ -226,23 +227,25 @@
   margin: 0;
   font-size: 20px;
   line-height: 1.2;
+  color: #e8eaf0;
 }
 
 .profile-view .username {
-  color: #888;
+  color: #a6adbb;
   font-size: 14px;
 }
 
 .profile-view .bio {
   margin: 6px 0 0;
   line-height: 1.4;
+  color: #a6adbb;
 }
 
 .profile-view .ids {
   margin-top: 8px;
   display: grid;
   gap: 4px;
-  color: #666;
+  color: #a6adbb;
   font-size: 13px;
 }
 
@@ -253,45 +256,4 @@
 .jjj {
   width: 100px;
   height: 100px;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #eee;
-}
-.nav {
-  display: flex;
-  gap: 12px;
-}
-.link {
-  padding: 6px 10px;
-  border-radius: 10px;
-  text-decoration: none;
-  color: #333;
-}
-.link.active {
-  background: #f2f4ff;
-  font-weight: 600;
-}
-.auth {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-.email {
-  font-size: 14px;
-  color: #666;
-}
-.btn-ghost {
-  border: 1px solid #ddd;
-  background: #fff;
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-.btn-ghost:hover {
-  background: #f7f7f7;
 }

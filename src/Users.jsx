@@ -4,13 +4,17 @@ import { Link } from "react-router-dom";
 
 export default function Users() {
   const [profiles, setProfiles] = useState([]);
+
   useEffect(() => {
     async function load() {
       const { data } = await supabase.from("profiles").select("id, email");
+
       setProfiles(data);
     }
+
     load();
   }, []);
+
   return (
     <div>
       <h2>Пользователи</h2>

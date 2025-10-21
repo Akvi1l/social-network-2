@@ -15,7 +15,6 @@ import Users from "./Users";
 import Profile from "./Profile";
 import Chat from "./Chat";
 
-
 export default function App() {
   // undefined — грузимся, null — не залогинен, object — есть сессия
   const [session, setSession] = useState(undefined);
@@ -53,7 +52,7 @@ export default function App() {
                   path="/profile"
                   element={<Profile session={session} />}
                 />
-                <Route path="/chat/:friend" element={<Chat />}/>
+                <Route path="/chat/:friend" element={<Chat />} />
                 <Route path="*" element={<Navigate to="/home" replace />} />
               </Route>
             ) : (
@@ -69,33 +68,3 @@ export default function App() {
     </AuthGate>
   );
 }
-
-
-
-
-// Set-ExecutionPolicy Unrestricted (windows powershell от имени админа)
-// npm install делается 1 раз для проекта(node_modules)
-// npm run dev
-// Set-ExecutionPolicy Restricted
-// npm install @supabase/supabase-js
-
-//сессия пользователя:
-// 1) Пользователь вошел
-// 2) сессия пустая, никто не вошел
-// //получаем текующую сессию, если до этого вошли
-// useEffect(() => {
-//   async function getActiveSession() {
-//     const { data } = await supabase.auth.getSession();
-//   }
-
-//   getActiveSession();
-// }, []);
-
-// //стартовое получение данных из БД
-// useEffect(() => {
-//   async function LoadData() {
-//     const { data, error } = await supabase.from("Profile").select("*");
-//     console.log(data, error);
-//   }
-//   LoadData();
-// }, []);

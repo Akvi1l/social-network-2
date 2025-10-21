@@ -8,8 +8,8 @@ html {
   font-family: "Quicksand", sans-serif;
   line-height: 1.5;
 
-  color: #ebe7ef;
-  background: radial-gradient(#280a48, #20043d);
+  color: #e8eaf0;
+  background: radial-gradient(#0f1115, #0a0d12);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -34,7 +34,8 @@ header h1 {
   margin: 0;
   font-family: "Roboto Condensed", sans-serif;
   font-size: 5rem;
-  background: linear-gradient(40deg, #ea00ff, #ea00ff, #03d5ff, #03d5ff);
+  background: linear-gradient(40deg, #7c5cff, #7c5cff, #2ec4b6, #2ec4b6);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
@@ -43,7 +44,7 @@ header h1 {
 header p {
   margin: 0;
   font-size: 1.25rem;
-  color: #8964b0;
+  color: #a6adbb;
   font-family: "Roboto Condensed", sans-serif;
 }
 
@@ -56,15 +57,17 @@ main {
 #core-concepts {
   padding: 2rem;
   border-radius: 6px;
-  background-color: #140524;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
 }
 
 main h2 {
   text-align: center;
   font-family: "Roboto Condensed", sans-serif;
   margin: 0 0 1.5rem 0;
-  color: #a18aba;
+  color: #e8eaf0;
 }
 
 #core-concepts ul {
@@ -117,7 +120,7 @@ main h2 {
   border: none;
   border-radius: 6px;
   background-color: transparent;
-  color: #a18aba;
+  color: #a6adbb;
   font-family: "Roboto Condensed", sans-serif;
   font-size: 1rem;
   cursor: pointer;
@@ -125,19 +128,20 @@ main h2 {
 }
 
 #examples menu button:hover {
-  background-color: #1b082f;
-  color: #ebe7ef;
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #e8eaf0;
 }
 
 #examples menu button.active {
-  background-color: #7925d3;
-  color: #ebe7ef;
+  background-color: #7c5cff;
+  color: #e8eaf0;
 }
 
 #tab-content {
   padding: 1rem;
   border-radius: 6px;
-  background-color: #2f1d43;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
